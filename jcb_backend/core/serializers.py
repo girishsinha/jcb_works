@@ -22,6 +22,7 @@ class OperatorSalarySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class WorkRecordSerializer(serializers.ModelSerializer):
+    machine_details = serializers.CharField(source='machine', read_only=True)
     class Meta:
         model = WorkRecord
         fields = '__all__'
