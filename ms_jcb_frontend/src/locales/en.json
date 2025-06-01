@@ -1,0 +1,8 @@
+{
+  "welcome": "Welcome {{name}}!",
+  "description": "Welcome to MS-JCB-Works, founded by Vikash Kumar and developed by MS-Solution.",
+  "home": "Home",
+  "dashboard": "Dashboard",
+  "workEntry": "Work Entry",
+  "operator": "Operator"
+}
