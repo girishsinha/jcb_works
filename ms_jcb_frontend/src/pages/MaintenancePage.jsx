@@ -37,40 +37,42 @@
 // };
 
 // export default MaintenancePage;
-import React, { useRef, useState, useEffect } from 'react';
-import MaintenanceForm from '../components/MaintenanceForm';
-import MaintenanceList from '../components/MaintenanceList';
+import React, { useRef, useState, useEffect } from "react";
+import MaintenanceForm from "../components/MaintenanceForm";
+import MaintenanceList from "../components/MaintenanceList";
+import { useTheme } from "../context/ThemeContext";
 
 const MaintenancePage = () => {
   const formRef = useRef(null);
   const listRef = useRef(null);
-  const [activeTab, setActiveTab] = useState('form');
+  const [activeTab, setActiveTab] = useState("form");
+  const theme = useTheme();
 
   const scrollToRef = (ref, tabName) => {
     setActiveTab(tabName);
-    ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
-    <div className="p-6">
+    <div className={`${theme.darkMode ? "dark bg-gray-900 " : ""} p-6`}>
       {/* Styled Nav Tabs */}
-      <div className="flex gap-8 border-b border-gray-300 mb-6">
+      <div className="flex gap-8 mb-6">
         <button
-          onClick={() => scrollToRef(formRef, 'form')}
+          onClick={() => scrollToRef(formRef, "form")}
           className={`pb-3 font-semibold transition-colors ${
-            activeTab === 'form'
-              ? 'border-b-4 border-blue-600 text-blue-600'
-              : 'text-gray-600 hover:text-blue-600'
+            activeTab === "form"
+              ? "border-b-4 border-blue-600 text-blue-600"
+              : "text-gray-600 hover:text-blue-600"
           }`}
         >
           Add Maintenance
         </button>
         <button
-          onClick={() => scrollToRef(listRef, 'list')}
+          onClick={() => scrollToRef(listRef, "list")}
           className={`pb-3 font-semibold transition-colors ${
-            activeTab === 'list'
-              ? 'border-b-4 border-blue-600 text-blue-600'
-              : 'text-gray-600 hover:text-blue-600'
+            activeTab === "list"
+              ? "border-b-4 border-blue-600 text-blue-600"
+              : "text-gray-600 dark:text-white hover:text-blue-600"
           }`}
         >
           View Records
@@ -78,7 +80,7 @@ const MaintenancePage = () => {
       </div>
 
       {/* Maintenance Form Section */}
-      <div ref={formRef}>
+      <div ref={formRef} className="flex justify-center">
         <MaintenanceForm onSuccess={() => {}} />
       </div>
 

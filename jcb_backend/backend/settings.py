@@ -38,34 +38,34 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     'rest_framework',
     'corsheaders',
     'core',
-    
-      
+
+
 ]
 
 MIDDLEWARE = [
-    
+
     'corsheaders.middleware.CorsMiddleware',
-    
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',    
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000", # React local dev server
+    "http://localhost:3000",  # React local dev server
     "http://127.0.0.1:3000",
     "http://192.168.56.1:3000",
 ]
 
-#CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -95,7 +95,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ms_jcb_db',           # your MySQL database name
         'USER': 'root',                # your MySQL username
-        'PASSWORD': 'hare_krishn@108',   # your MySQL password
+        # 'PASSWORD': 'hare_krishn@108',   # your MySQL password
+        'PASSWORD': 'oyepapaji',   # your MySQL password
         'HOST': 'localhost',
         'PORT': '3306',
     }
