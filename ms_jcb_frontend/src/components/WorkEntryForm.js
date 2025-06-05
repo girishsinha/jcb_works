@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import { useTheme } from "../context/ThemeContext";
 const WorkEntryForm = () => {
   const [machines, setMachines] = useState([]);
   const [formData, setFormData] = useState({
@@ -81,16 +81,17 @@ const WorkEntryForm = () => {
         console.error("Submission Error:", err);
       });
   };
+  const theme = useTheme();
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-md mt-6">
-      <h2 className="text-xl font-bold mb-4">Work Entry Form</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className={`${theme.darkMode ? "dark bg-gray-900 " : ""} flex flex-col items-center justify-center min-h-screen md:p-6`}>
+      <h2 className="text-xl dark:text-white font-bold mb-4">Work Entry Form</h2>
+      <form onSubmit={handleSubmit} className="space-y-4 md:w-1/2 p-6 dark:text-white">
 
         {/* Machine */}
         <div>
           <label className="block font-medium">Machine</label>
-          <select name="machine" value={formData.machine} onChange={handleChange} className="w-full border rounded px-3 py-2" required>
+          <select name="machine" value={formData.machine} onChange={handleChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
             <option value="">--Select Machine--</option>
             {machines.map(machine => (
               <option key={machine.id} value={machine.id}>
@@ -103,7 +104,7 @@ const WorkEntryForm = () => {
         {/* Work Type */}
         <div>
           <label className="block font-medium">Work Type</label>
-          <select name="work_type" value={formData.work_type} onChange={handleChange} className="w-full border rounded px-3 py-2" required>
+          <select name="work_type" value={formData.work_type} onChange={handleChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
             <option value="">--Select--</option>
             <option>Plant Work</option>
             <option>Farming Work</option>
@@ -116,60 +117,60 @@ const WorkEntryForm = () => {
 
         {/* Client Info */}
         <input type="text" name="client_name" placeholder="Client Name" value={formData.client_name} onChange={handleChange}
-          className="w-full border rounded px-3 py-2" required />
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
 
         <input type="text" name="client_address" placeholder="Client Address" value={formData.client_address} onChange={handleChange}
-          className="w-full border rounded px-3 py-2" required />
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
 
         {/* Work Dates */}
         <div className="grid grid-cols-2 gap-4">
           <input type="date" name="start_date" value={formData.start_date} onChange={handleChange}
-            className="w-full border rounded px-3 py-2" required />
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
           <input type="date" name="end_date" value={formData.end_date} onChange={handleChange}
-            className="w-full border rounded px-3 py-2" required />
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
         </div>
 
         {/* Hours and Diesel */}
         <div className="grid grid-cols-2 gap-4">
           <input type="number" name="total_working_hours" placeholder="Total Working Hours" value={formData.total_working_hours} onChange={handleChange}
-            className="w-full border rounded px-3 py-2" required />
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
           <input type="number" name="diesel_used" placeholder="Diesel Used (Litres)" value={formData.diesel_used} onChange={handleChange}
-            className="w-full border rounded px-3 py-2" required />
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
         </div>
 
         {/* Rate per Hour */}
         <input type="number" name="rate_per_hour" placeholder="Rate per Hour" value={formData.rate_per_hour} onChange={handleChange}
-          className="w-full border rounded px-3 py-2" required />
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
 
         {/* Total Amount (auto calculated) */}
         <div>
           <label className="block font-medium">Total Amount</label>
-          <p className="border bg-gray-100 rounded px-3 py-2">{totalAmount()} ₹</p>
+          <p className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">{totalAmount()} ₹</p>
         </div>
 
         {/* Commission Section */}
-        <div className="flex items-center space-x-2">
-          <input type="checkbox" name="commission_based" checked={formData.commission_based} onChange={handleChange} />
-          <label>Commission Based?</label>
+        <div className="flex items-start mb-6 space-x-2">
+          <input type="checkbox" name="commission_based" className='w-4 h-4 border border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800' checked={formData.commission_based} onChange={handleChange} />
+          <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Commission Based?</label>
         </div>
 
         {formData.commission_based && (
           <input type="number" name="commission_amount" placeholder="Commission Amount" value={formData.commission_amount} onChange={handleChange}
-            className="w-full border rounded px-3 py-2" />
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
         )}
 
         {/* Payment Status */}
         <div>
           <label className="block font-medium">Payment Status</label>
           <select name="payment_status" value={formData.payment_status} onChange={handleChange}
-            className="w-full border rounded px-3 py-2">
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
             <option value="Pending">Pending</option>
             <option value="Done">Done</option>
           </select>
         </div>
 
         {/* Submit Button */}
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
           Submit Work Entry
         </button>
       </form>

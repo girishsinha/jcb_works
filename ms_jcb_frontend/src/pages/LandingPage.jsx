@@ -26,7 +26,7 @@
 //   return (
 //     <div className={`${darkMode ? "dark" : ""}`}>
 //       <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-300 overflow-y-auto scroll-smooth">
-        
+
 //         {/* Navbar */}
 //         <nav className="flex justify-between items-center px-4 py-3 border-b bg-gray-100 dark:bg-gray-800">
 //           {/* Left: Navigation Links */}
@@ -115,8 +115,6 @@
 
 // export default LandingPage;
 
-
-
 // import React, { useState, useRef } from "react"; // ✅ import useRef
 // import { useNavigate } from "react-router-dom";
 // import { useTranslation } from "react-i18next";
@@ -126,7 +124,6 @@
 // import OperatorPage from './OperatorPage';
 // import WorkEntryRecordPage from './Work_Entry_Record_Page'; // ✅ Import your component
 // import MaintenancePage from './MaintenancePage';
-
 
 // const LandingPage = ({ user = { name: "Vikash Yadu", profilePic: null } }) => {
 //   const { t, i18n } = useTranslation();
@@ -158,7 +155,7 @@
 //   return (
 //     <div className={`${darkMode ? "dark" : ""}`}>
 //       <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-300 overflow-y-auto scroll-smooth">
-        
+
 //         {/* Navbar */}
 //         <nav className="flex justify-between items-center px-4 py-3 border-b bg-gray-100 dark:bg-gray-800">
 //           {/* Left: Navigation Links */}
@@ -258,9 +255,6 @@
 
 // export default LandingPage;
 
-
-
-
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -268,9 +262,11 @@ import { motion } from "framer-motion";
 import { Sun, Moon, Menu, X, LogOut } from "lucide-react";
 import defaultProfile from "../assets/defaultProfile.jpg";
 
-import OperatorPage from './OperatorPage';
-import WorkEntryRecordPage from './Work_Entry_Record_Page';
-import MaintenancePage from './MaintenancePage'; // ✅ Import MaintenancePage
+import OperatorPage from "./OperatorPage";
+import WorkEntryRecordPage from "./Work_Entry_Record_Page";
+import MaintenancePage from "./MaintenancePage"; // ✅ Import MaintenancePage
+
+import { useTheme } from "../context/ThemeContext";
 
 const LandingPage = ({ user = { name: "Vikash Yadu", profilePic: null } }) => {
   const { t, i18n } = useTranslation();
@@ -307,21 +303,37 @@ const LandingPage = ({ user = { name: "Vikash Yadu", profilePic: null } }) => {
       setMenuOpen(false);
     }
   };
+  const theme = useTheme();
 
   return (
-    <div className={`${darkMode ? "dark" : ""}`}>
+    <div className={`${theme.darkMode ? "dark" : ""}`}>
       <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-300 overflow-y-auto scroll-smooth">
-
         {/* Navbar */}
         <nav className="flex justify-between items-center px-4 py-3 border-b bg-gray-100 dark:bg-gray-800">
           {/* Left: Navigation Links */}
           <div className="flex items-center gap-4">
             <div className="hidden md:flex gap-4">
-              <a href="#home" className="hover:text-yellow-500">🏠 {t("home")}</a>
-              <a href="#dashboard" className="hover:text-yellow-500">📊 {t("dashboard")}</a>
-              <button onClick={scrollToWorkEntry} className="hover:text-yellow-500">📝 {t("workEntry")}</button>
-              <a href="#operator" className="hover:text-yellow-500">👷 {t("operator")}</a>
-              <button onClick={scrollToMaintenance} className="hover:text-yellow-500">🛠 {t("maintenance")}</button>
+              <a href="#home" className="hover:text-yellow-500">
+                🏠 {t("home")}
+              </a>
+              <a href="#dashboard" className="hover:text-yellow-500">
+                📊 {t("dashboard")}
+              </a>
+              <button
+                onClick={scrollToWorkEntry}
+                className="hover:text-yellow-500"
+              >
+                📝 {t("workEntry")}
+              </button>
+              <a href="#operator" className="hover:text-yellow-500">
+                👷 {t("operator")}
+              </a>
+              <button
+                onClick={scrollToMaintenance}
+                className="hover:text-yellow-500"
+              >
+                🛠 {t("maintenance")}
+              </button>
             </div>
 
             {/* Mobile Menu Toggle */}
@@ -364,16 +376,25 @@ const LandingPage = ({ user = { name: "Vikash Yadu", profilePic: null } }) => {
         {/* Mobile dropdown menu */}
         {menuOpen && (
           <div className="md:hidden bg-gray-100 dark:bg-gray-800 border-b px-4 py-2 space-y-2">
-            <a href="#home" onClick={toggleMenu}>🏠 {t("home")}</a>
-            <a href="#dashboard" onClick={toggleMenu}>📊 {t("dashboard")}</a>
+            <a href="#home" onClick={toggleMenu}>
+              🏠 {t("home")}
+            </a>
+            <a href="#dashboard" onClick={toggleMenu}>
+              📊 {t("dashboard")}
+            </a>
             <button onClick={scrollToWorkEntry}>📝 {t("workEntry")}</button>
-            <a href="#operator" onClick={toggleMenu}>👷 {t("operator")}</a>
+            <a href="#operator" onClick={toggleMenu}>
+              👷 {t("operator")}
+            </a>
             <button onClick={scrollToMaintenance}>🛠 {t("maintenance")}</button>
           </div>
         )}
 
         {/* Hero Section */}
-        <div id="home" className="flex-1 flex items-center justify-center text-center p-6">
+        <div
+          id="home"
+          className="flex-1 flex items-center justify-center text-center p-6"
+        >
           <motion.div
             initial={{ y: -100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -389,20 +410,19 @@ const LandingPage = ({ user = { name: "Vikash Yadu", profilePic: null } }) => {
         </div>
 
         {/* Work Entry Section */}
-        <section ref={workEntryRef}>
+        {/* <section ref={workEntryRef}>
           <WorkEntryRecordPage />
-        </section>
+        </section> */}
 
         {/* Operator Section */}
-        <section id="operator">
+        {/* <section id="operator">
           <OperatorPage />
-        </section>
+        </section> */}
 
         {/* ✅ Maintenance Section */}
-        <section ref={maintenanceRef}>
+        {/* <section ref={maintenanceRef}>
           <MaintenancePage />
-        </section>
-        
+        </section> */}
       </div>
     </div>
   );

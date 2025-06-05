@@ -15,6 +15,10 @@ import LandingPage from './pages/LandingPage';
 import api from './services/api';
 
 // ✅ Import UserProvider
+import { ThemeProvider } from './context/ThemeContext';
+import Navbar from './components/Navbar';
+import MaintenancePage from './pages/MaintenancePage';
+import { User } from 'lucide-react';
 import { UserProvider } from './context/UserContext';
 
 function App() {
@@ -61,33 +65,37 @@ function App() {
   console.log('App.js: isLoggedIn =', isLoggedIn);
 
   return (
-    <UserProvider>
-      <Router>
-        <div className="App">
-          {/* Example: Add <Navbar onLogout={handleLogout} /> here if needed */}
+    <ThemeProvider>
+      <UserProvider>
+        <Router>
+          <div className="App">
+            {/* Example: Add <Navbar onLogout={handleLogout} /> here if needed */}
+            <Navbar />
+            <Routes>
+              {/* Public: Login */}
+              <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
 
-          <Routes>
-            {/* Public: Login */}
-            <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
+              {/* Protected routes: only if logged in */}
+              {/* <Route path="/landing" element={<LandingPage />} /> */}
+              <Route path="/landing" element={isLoggedIn ? <LandingPage /> : <Navigate to="/login" replace />} />
+              <Route path="/operators" element={isLoggedIn ? <OperatorPage /> : <Navigate to="/login" replace />} />
+              <Route path="/work-entry" element={isLoggedIn ? <WorkEntryForm /> : <Navigate to="/login" replace />} />
+              <Route path="/machines" element={isLoggedIn ? <MachineList /> : <Navigate to="/login" replace />} />
+              <Route path="/work-records" element={isLoggedIn ? <WorkRecordsTable /> : <Navigate to="/login" replace />} />
+              <Route path="/yearly-overview" element={isLoggedIn ? <YearlyOverviewChart /> : <Navigate to="/login" replace />} />
+              <Route path="/monthly-diesel" element={isLoggedIn ? <MonthlyDieselGraph /> : <Navigate to="/login" replace />} />
+              <Route path="/maintenance" element={isLoggedIn ? <MaintenancePage /> : <Navigate to="/login" replace />} />
 
-            {/* Protected routes: only if logged in */}
-            <Route path="/landing" element={isLoggedIn ? <LandingPage /> : <Navigate to="/login" replace />} />
-            <Route path="/operators" element={isLoggedIn ? <OperatorPage /> : <Navigate to="/login" replace />} />
-            <Route path="/work-entry" element={isLoggedIn ? <WorkEntryForm /> : <Navigate to="/login" replace />} />
-            <Route path="/machines" element={isLoggedIn ? <MachineList /> : <Navigate to="/login" replace />} />
-            <Route path="/work-records" element={isLoggedIn ? <WorkRecordsTable /> : <Navigate to="/login" replace />} />
-            <Route path="/yearly-overview" element={isLoggedIn ? <YearlyOverviewChart /> : <Navigate to="/login" replace />} />
-            <Route path="/monthly-diesel" element={isLoggedIn ? <MonthlyDieselGraph /> : <Navigate to="/login" replace />} />
+              {/* Default root */}
+              <Route path="/" element={<Navigate to={isLoggedIn ? "/landing" : "/login"} replace />} />
 
-            {/* Default root */}
-            <Route path="/" element={<Navigate to={isLoggedIn ? "/landing" : "/login"} replace />} />
-
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </div>
-      </Router>
-    </UserProvider>
+              {/* Fallback */}
+              {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
+            </Routes>
+          </div>
+        </Router>
+      </UserProvider>
+    </ThemeProvider>
   );
 }
 
