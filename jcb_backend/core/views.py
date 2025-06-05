@@ -45,25 +45,30 @@ class OperatorSalaryViewSet(viewsets.ModelViewSet):
 
 class WorkRecordViewSet(viewsets.ModelViewSet):
     queryset = WorkRecord.objects.all()
+    serializer_class = WorkRecordSerializer
     
     def get_queryset(self):
         queryset = WorkRecord.objects.all()
         machine = self.request.query_params.get('machine')
         status = self.request.query_params.get('payment_status')
-        start_date = self.request.query_params.get('start_date')
-        end_date = self.request.query_params.get('end_date')
+        month = self.request.query_params.get('month')
+        year = self.request.query_params.get('year')
+
+        if not any([machine, status, month, year]):
+            return queryset.none()  # show nothing if no filter
 
         if machine:
             queryset = queryset.filter(machine__machine_number=machine)
         if status:
             queryset = queryset.filter(payment_status=status)
-        if start_date and end_date:
-            queryset = queryset.filter(start_date__range=[start_date, end_date])
+        if month and year:
+            queryset = queryset.filter(start_date__month=month, start_date__year=year)
+        elif year:
+            queryset = queryset.filter(start_date__year=year)
 
-        return queryset
+        return queryset.order_by('start_date')
 
     
-    serializer_class = WorkRecordSerializer
 
 
 @api_view(['GET'])
