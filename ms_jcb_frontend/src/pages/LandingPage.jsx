@@ -308,9 +308,9 @@ const LandingPage = ({ user = { name: "Vikash Yadu", profilePic: null } }) => {
   return (
     <div className={`${theme.darkMode ? "dark" : ""}`}>
       <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-300 overflow-y-auto scroll-smooth">
-        {/* Navbar */}
-        <nav className="flex justify-between items-center px-4 py-3 border-b bg-gray-100 dark:bg-gray-800">
-          {/* Left: Navigation Links */}
+       
+        {/* <nav className="flex justify-between items-center px-4 py-3 border-b bg-gray-100 dark:bg-gray-800">
+          
           <div className="flex items-center gap-4">
             <div className="hidden md:flex gap-4">
               <a href="#home" className="hover:text-yellow-500">
@@ -336,7 +336,7 @@ const LandingPage = ({ user = { name: "Vikash Yadu", profilePic: null } }) => {
               </button>
             </div>
 
-            {/* Mobile Menu Toggle */}
+          
             <div className="md:hidden">
               <button onClick={toggleMenu}>
                 {menuOpen ? <X /> : <Menu />}
@@ -344,7 +344,7 @@ const LandingPage = ({ user = { name: "Vikash Yadu", profilePic: null } }) => {
             </div>
           </div>
 
-          {/* Right: Theme, Language, Profile, Logout */}
+          
           <div className="flex items-center gap-3">
             <img
               src={user.profilePic || defaultProfile}
@@ -371,7 +371,7 @@ const LandingPage = ({ user = { name: "Vikash Yadu", profilePic: null } }) => {
               Logout
             </button>
           </div>
-        </nav>
+        </nav> */}
 
         {/* Mobile dropdown menu */}
         {menuOpen && (

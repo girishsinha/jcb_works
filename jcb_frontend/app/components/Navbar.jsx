@@ -1,21 +1,30 @@
+"use client";
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react"; // optional: clean icons
 import { Sun, Moon, LogOut } from "lucide-react";
-
+import Link from "next/link";
 import { useTheme } from "../context/ThemeContext";
-import { Link } from "react-router-dom";
+
 import { easeInOut, motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const theme = useTheme();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    router.push("/login");
+  };
 
   const navItems = [
     { name: "🏠 Home", href: "/" },
     { name: "📊 Dashboard", href: "/dashboard" },
-    { name: "📝 Work Entry", href: "/work-entry" },
-    { name: "👷 Operator", href: "/operators" },
-    { name: "🛠 Maintenance", href: "/maintenance" },
+    { name: "📝 Work Entry", href: "/Work-entry" },
+    { name: "👷 Operator", href: "/Operator" },
+    { name: "🛠 Maintenance", href: "/Maintenance" },
   ];
   const darkMode = theme.darkMode;
   return (
@@ -40,7 +49,7 @@ const Navbar = () => {
               {navItems.map((item) => (
                 <li key={item.href}>
                   <Link
-                    to={item.href}
+                    href={item.href}
                     className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent focus:text-blue-700"
                   >
                     {item.name}
@@ -66,8 +75,8 @@ const Navbar = () => {
               <li>
                 {" "}
                 <button
-                  //   onClick={handleLogout}
-                  className="text-red-500 hover:underline flex items-center gap-1"
+                  onClick={handleLogout}
+                  className="text-red-500 hover:underline flex items-center gap-1 cursor-pointer"
                 >
                   <LogOut size={18} />
                   Logout
@@ -88,7 +97,7 @@ const Navbar = () => {
             {navItems.map((item) => (
               <li key={item.href}>
                 <Link
-                  to={item.href}
+                  href={item.href}
                   className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent focus:text-blue-700"
                   onClick={() => setIsOpen(false)}
                 >
