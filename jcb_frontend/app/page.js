@@ -50,7 +50,7 @@ export default function Home({ user = { name: "Vikash Yadu", profilePic: null } 
     }
   };
   const theme = useTheme();
-  console.log(theme)
+  // console.log(theme)
 
   return (
     <div className={`${theme.darkMode ? "dark" : ""}`}>
