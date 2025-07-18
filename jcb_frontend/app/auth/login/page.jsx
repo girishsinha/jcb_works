@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import api from "../services/api";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Login = ({ onLoginSuccess = () => {} }) => {
   const [username, setUsername] = useState("");
@@ -87,6 +88,9 @@ const Login = ({ onLoginSuccess = () => {} }) => {
         </button>
       </form>
       {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
+      <Link href={"/auth/signup"} className="font-bold text-blue-400 p-4">
+        if new Signup{" "}
+      </Link>
     </div>
   );
 };
