@@ -1,11 +1,10 @@
-"use client"; // ✅ add this directive to enable client-side rendering
+"use client"; // Enables client-side rendering in Next.js
 import React, { useState } from "react";
 import axios from "axios";
-
 import api from "../services/api";
 import { useRouter } from "next/navigation";
 
-const Login = ({ onLoginSuccess }) => {
+const Login = ({ onLoginSuccess = () => {} }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -25,17 +24,23 @@ const Login = ({ onLoginSuccess }) => {
 
       const { access, refresh } = response.data;
 
+      // ✅ Store tokens in localStorage
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
-      localStorage.setItem("token", response.data.token);
 
+      // ✅ Set default Authorization header for future requests
       api.defaults.headers.common["Authorization"] = `Bearer ${access}`;
-      onLoginSuccess(); // Update isLoggedIn state in App
 
-      // ✅ After successful login, navigate to a protected page
-      router.push("/landing"); // or '/dashboard' or any default route
+      // ✅ Safely call onLoginSuccess if it's passed
+      if (typeof onLoginSuccess === "function") {
+        onLoginSuccess();
+      }
+
+      // ✅ Navigate to protected page after login
+      router.push("/landing");
     } catch (err) {
       console.error("Login failed:", err);
+
       if (axios.isAxiosError(err) && err.response) {
         setError(err.response.data.detail || "Invalid username or password");
       } else {

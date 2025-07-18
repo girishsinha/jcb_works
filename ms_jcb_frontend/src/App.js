@@ -1,101 +1,143 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
+import axios from 'axios';
 
-// Import your components and pages
-import MachineList from './components/MachineList';
-import WorkEntryForm from './components/WorkEntryForm';
-import WorkRecordsTable from './components/WorkRecordsTable';
-import YearlyOverviewChart from './components/YearlyOverviewChart';
-import MonthlyDieselGraph from './components/MonthlyDieselGraph';
-import OperatorPage from './pages/OperatorPage';
+// Pages & Components
 import LoginPage from './pages/LoginPage';
 import LandingPage from './pages/LandingPage';
+import OperatorPage from './components/OperatorPage';
+import WorkEntryForm from './components/WorkEntryForm';
+import WorkRecordsTable from './components/WorkRecordsTable';
+import OperatorForm from './components/OperatorForm';
+import SalaryTracker from "./components/SalaryTracker";
+import MaintenanceForm from './components/MaintenanceForm';
+import MaintenanceList from './components/MaintenanceList';
+import AddMachine from "./components/AddMachine";
+import ViewMachine from "./components/ViewMachine";
+import UserRegistrationForm from "./components/UserRegistrationForm";
+import ActivityLogTable from "./components/ActivityLogTable";
 
+// API and Context
 import api from './services/api';
-
-// ✅ Import UserProvider
-import { ThemeProvider } from './context/ThemeContext';
-import Navbar from './components/Navbar';
-import MaintenancePage from './pages/MaintenancePage';
-import { User } from 'lucide-react';
 import { UserProvider } from './context/UserContext';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [userInfo, setUserInfo] = useState(null); // ✅ Store user info
 
-  // ✅ Check token and set Axios default headers on app load
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
+
     if (token) {
-      setIsLoggedIn(true);
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      console.log('App.js: Token found on load, user is logged in.');
+      // Verify token first
+      axios
+        .post('http://127.0.0.1:8000/api/token/verify/', { token })
+        .then(() => {
+          console.log('✅ Token is valid.');
+          setIsLoggedIn(true);
+          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+          // ✅ Fetch user details
+          axios
+            .get('http://127.0.0.1:8000/api/user/', {
+              headers: { Authorization: `Bearer ${token}` },
+            })
+            .then((res) => {
+              setUserInfo(res.data);
+              console.log('👤 User info loaded:', res.data);
+            })
+            .catch((err) => {
+              console.warn('❌ Failed to fetch user info:', err);
+              setUserInfo(null);
+            });
+        })
+        .catch((err) => {
+          console.warn('❌ Invalid token. Logging out.', err);
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          setIsLoggedIn(false);
+          setUserInfo(null);
+        })
+        .finally(() => setLoading(false));
     } else {
-      console.log('App.js: No token found, user is NOT logged in.');
+      console.warn('🚫 No token found. Redirecting to login.');
+      setIsLoggedIn(false);
+      setLoading(false);
     }
 
-    // ✅ Backend connection test (good for dev)
+    // Optional backend connection test
     fetch('http://127.0.0.1:8000/api/test/')
-      .then(response => {
-        if (!response.ok) throw new Error('Failed to connect');
-        return response.text();
-      })
-      .then(data => console.log("Connected to Django:", data))
-      .catch(error => console.error("Backend error:", error));
+      .then((res) => res.text())
+      .then((data) => console.log('✅ Backend test success:', data))
+      .catch((err) => console.error('❌ Backend test failed:', err));
   }, []);
 
-  // ✅ After login, store token and set login state
-  const handleLoginSuccess = (token) => {
-    localStorage.setItem('accessToken', token);
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  const handleLoginSuccess = (accessToken, refreshToken) => {
+    // Save tokens
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+    api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
     setIsLoggedIn(true);
-    console.log('App.js: handleLoginSuccess - logged in successfully.');
+
+    // Fetch user info after login
+    axios
+      .get('http://127.0.0.1:8000/api/user/', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+      .then((res) => {
+        setUserInfo(res.data);
+        console.log('👤 User info loaded after login:', res.data);
+      })
+      .catch((err) => {
+        console.warn('❌ Failed to fetch user info after login:', err);
+        setUserInfo(null);
+      });
+
+    console.log('✅ Login successful.');
   };
 
-  // ✅ Logout: clear token and login state
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    setIsLoggedIn(false);
     delete api.defaults.headers.common['Authorization'];
-    console.log('App.js: handleLogout - logged out successfully.');
+    setIsLoggedIn(false);
+    setUserInfo(null);
+    console.log('👋 Logged out.');
   };
 
-  console.log('App.js: isLoggedIn =', isLoggedIn);
+  if (loading) return <div className="text-center text-lg mt-10">Loading...</div>;
 
   return (
-    <ThemeProvider>
-      <UserProvider>
-        <Router>
-          <div className="App">
-            {/* Example: Add <Navbar onLogout={handleLogout} /> here if needed */}
-            <Navbar />
-            <Routes>
-              {/* Public: Login */}
-              <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
+    <UserProvider>
+      <Router>
+        <div className="App">
+          <Routes>
+            {/* Public Route */}
+            <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
 
-              {/* Protected routes: only if logged in */}
-              {/* <Route path="/landing" element={<LandingPage />} /> */}
-              <Route path="/landing" element={isLoggedIn ? <LandingPage /> : <Navigate to="/login" replace />} />
-              <Route path="/operators" element={isLoggedIn ? <OperatorPage /> : <Navigate to="/login" replace />} />
-              <Route path="/work-entry" element={isLoggedIn ? <WorkEntryForm /> : <Navigate to="/login" replace />} />
-              <Route path="/machines" element={isLoggedIn ? <MachineList /> : <Navigate to="/login" replace />} />
-              <Route path="/work-records" element={isLoggedIn ? <WorkRecordsTable /> : <Navigate to="/login" replace />} />
-              <Route path="/yearly-overview" element={isLoggedIn ? <YearlyOverviewChart /> : <Navigate to="/login" replace />} />
-              <Route path="/monthly-diesel" element={isLoggedIn ? <MonthlyDieselGraph /> : <Navigate to="/login" replace />} />
-              <Route path="/maintenance" element={isLoggedIn ? <MaintenancePage /> : <Navigate to="/login" replace />} />
+            {/* Private Routes */}
+            <Route path="/landing" element={isLoggedIn ? <LandingPage user={userInfo} /> : <Navigate to="/login" replace />} />
+            <Route path="/operator-page" element={isLoggedIn ? <OperatorPage /> : <Navigate to="/login" replace />} />
+            <Route path="/work-entry" element={isLoggedIn ? <WorkEntryForm /> : <Navigate to="/login" replace />} />
+            <Route path="/work-records" element={isLoggedIn ? <WorkRecordsTable /> : <Navigate to="/login" replace />} />
+            <Route path="/operator-form" element={isLoggedIn ? <OperatorForm /> : <Navigate to="/login" replace />} />
+            <Route path="/salary-tracker" element={isLoggedIn ? <SalaryTracker /> : <Navigate to="/login" replace />} />
+            <Route path="/maintenance-form" element={isLoggedIn ? <MaintenanceForm /> : <Navigate to="/login" replace />} />
+            <Route path="/maintenance-list" element={isLoggedIn ? <MaintenanceList /> : <Navigate to="/login" replace />} />
+            <Route path="/add-machine" element={isLoggedIn ? <AddMachine /> : <Navigate to="/login" replace />} />
+            <Route path="/view-machine" element={isLoggedIn ? <ViewMachine /> : <Navigate to="/login" replace />} />
+            <Route path="/user-registration" element={isLoggedIn ? <UserRegistrationForm /> : <Navigate to="/login" replace />}/>
+            <Route path="/user-activity" element={isLoggedIn ? <ActivityLogTable /> : <Navigate to="/login" replace />}/>
 
-              {/* Default root */}
-              <Route path="/" element={<Navigate to={isLoggedIn ? "/landing" : "/login"} replace />} />
-
-              {/* Fallback */}
-              {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
-            </Routes>
-          </div>
-        </Router>
-      </UserProvider>
-    </ThemeProvider>
+            {/* Default Redirect */}
+            <Route path="/" element={<Navigate to={isLoggedIn ? "/landing" : "/login"} replace />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </div>
+      </Router>
+    </UserProvider>
   );
 }
 
