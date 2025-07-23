@@ -6,8 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 
 
 const AuthProvider = ({ children }) => {
-    const token = localStorage.getItem("token");
-    console.log(token);
+    const token = localStorage.getItem("accessToken");
+    // console.log(token);
     const pathname = usePathname();
     const router = useRouter();
 

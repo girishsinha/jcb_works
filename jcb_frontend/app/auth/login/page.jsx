@@ -23,25 +23,25 @@ const Login = ({ onLoginSuccess }) => {
         username,
         password,
       });
-
       const { access, refresh } = response.data;
+      console.log(access, refresh);
 
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
-      localStorage.setItem("token", response.data.token);
+      // localStorage.setItem("token", response.data.token);
 
-      api.defaults.headers.common["Authorization"] = `Bearer ${access}`;
-      onLoginSuccess(); // Update isLoggedIn state in App
+      // api.defaults.headers.common["Authorization"] = `Bearer ${access}`;
+      // onLoginSuccess(); // Update isLoggedIn state in App
 
       // ✅ After successful login, navigate to a protected page
-      router.push("/landing"); // or '/dashboard' or any default route
+      // router.push("/landing"); // or '/dashboard' or any default route
     } catch (err) {
-      console.error("Login failed:", err);
-      if (axios.isAxiosError(err) && err.response) {
-        setError(err.response.data.detail || "Invalid username or password");
-      } else {
-        setError("An unexpected error occurred during login.");
-      }
+      console.error(err);
+      //   if (axios.isAxiosError(err) && err.response) {
+      //     setError(err.response.data.detail || "Invalid username or password");
+      //   } else {
+      //     setError("An unexpected error occurred during login.");
+      //   }
     } finally {
       setLoading(false);
     }
