@@ -1,12 +1,11 @@
-"use client"; // ✅ add this directive to enable client-side rendering
+"use client"; // Enables client-side rendering in Next.js
 import React, { useState } from "react";
 import axios from "axios";
-
-import api from "@/app/services/api";
+import api from "../services/api";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const Login = ({ onLoginSuccess }) => {
+const Login = ({ onLoginSuccess = () => {} }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -26,6 +25,7 @@ const Login = ({ onLoginSuccess }) => {
       const { access, refresh } = response.data;
       console.log(access, refresh);
 
+      // ✅ Store tokens in localStorage
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
       // localStorage.setItem("token", response.data.token);

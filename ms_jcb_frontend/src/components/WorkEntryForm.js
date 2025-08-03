@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useTheme } from "../context/ThemeContext";
+import api from '../services/api'; // ✅ Correct path
+ // ✅ Import shared axios instance
+
 const WorkEntryForm = () => {
   const [machines, setMachines] = useState([]);
+  const [userGroup, setUserGroup] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const [formData, setFormData] = useState({
     machine: '',
     work_type: '',
@@ -18,25 +22,39 @@ const WorkEntryForm = () => {
     payment_status: 'Pending',
   });
 
-  // Fetch machine list for dropdown
   useEffect(() => {
-    axios.get('http://localhost:8000/api/machines/')
+    // ✅ Get machine list
+    api.get('machines/')
+      .then(response => setMachines(response.data))
+      .catch(error => console.error("❌ Error fetching machines:", error));
+
+    // ✅ Get user and detect group
+    api.get('user/')
       .then(response => {
-        setMachines(response.data);
+        const groups = response.data.groups || [];
+        if (groups.includes('Level_1_Owner_admin')) {
+          setUserGroup('Level_1');
+        } else if (groups.includes('Level_2_Staff_')) {
+          setUserGroup('Level_2');
+        } else if (groups.includes('Level_3_Employee_operator')) {
+          setUserGroup('Level_3');
+        } else {
+          setUserGroup('Unknown');
+        }
       })
       .catch(error => {
-        console.error("Error fetching machines:", error);
-      });
+        console.error("❌ Error fetching user info:", error);
+        setUserGroup('Unknown');
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  // Auto calculate total amount
   const totalAmount = () => {
     const hours = parseFloat(formData.total_working_hours);
     const rate = parseFloat(formData.rate_per_hour);
     return !isNaN(hours) && !isNaN(rate) ? hours * rate : 0;
   };
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -45,10 +63,8 @@ const WorkEntryForm = () => {
     }));
   };
 
-  // Submit form
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const dataToSend = {
       ...formData,
       total_working_hours: parseFloat(formData.total_working_hours),
@@ -58,8 +74,8 @@ const WorkEntryForm = () => {
       total_amount: totalAmount()
     };
 
-    axios.post('http://localhost:8000/api/work-entry/', dataToSend)
-      .then(res => {
+    api.post('work-entry/', dataToSend)
+      .then(() => {
         alert("✅ Work Entry Saved Successfully!");
         setFormData({
           machine: '',
@@ -81,18 +97,31 @@ const WorkEntryForm = () => {
         console.error("Submission Error:", err);
       });
   };
-  const theme = useTheme();
+
+  if (loading) return <div className="text-center mt-10 text-lg">Loading...</div>;
+
+  if (userGroup === 'Level_3') {
+    return (
+      <div className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 w-full max-w-xl mx-auto mt-10 text-center">
+        <h2 className="text-xl font-bold text-red-600">⛔ Access Denied</h2>
+        <p className="text-gray-600 dark:text-gray-300 mt-2">
+          You do not have permission to access the Entry form.
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className={`${theme.darkMode ? "dark bg-gray-900 " : ""} flex flex-col items-center justify-center min-h-screen md:p-6`}>
-      <h2 className="text-xl dark:text-white font-bold mb-4">Work Entry Form</h2>
-      <form onSubmit={handleSubmit} className="space-y-4 md:w-1/2 p-6 dark:text-white">
+    <div className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 w-full max-w-4xl mx-auto">
+      <h2 className="text-2xl font-bold text-purple-600 mb-6 text-center">📝 Work Entry Form</h2>
 
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Machine */}
-        <div>
-          <label className="block font-medium">Machine</label>
-          <select name="machine" value={formData.machine} onChange={handleChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
-            <option value="">--Select Machine--</option>
+        <div className="col-span-2">
+          <label className="block mb-1 font-medium">Machine</label>
+          <select name="machine" value={formData.machine} onChange={handleChange} required
+            className="w-full rounded-md border border-gray-300 px-3 py-2 bg-white dark:bg-gray-700 dark:text-white">
+            <option value="">-- Select Machine --</option>
             {machines.map(machine => (
               <option key={machine.id} value={machine.id}>
                 {machine.machine_number}
@@ -102,10 +131,11 @@ const WorkEntryForm = () => {
         </div>
 
         {/* Work Type */}
-        <div>
-          <label className="block font-medium">Work Type</label>
-          <select name="work_type" value={formData.work_type} onChange={handleChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
-            <option value="">--Select--</option>
+        <div className="col-span-2">
+          <label className="block mb-1 font-medium">Work Type</label>
+          <select name="work_type" value={formData.work_type} onChange={handleChange} required
+            className="w-full rounded-md border border-gray-300 px-3 py-2 bg-white dark:bg-gray-700 dark:text-white">
+            <option value="">-- Select --</option>
             <option>Plant Work</option>
             <option>Farming Work</option>
             <option>Digging/Loading Soil</option>
@@ -117,62 +147,60 @@ const WorkEntryForm = () => {
 
         {/* Client Info */}
         <input type="text" name="client_name" placeholder="Client Name" value={formData.client_name} onChange={handleChange}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-
+          className="rounded-md border border-gray-300 px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" required />
         <input type="text" name="client_address" placeholder="Client Address" value={formData.client_address} onChange={handleChange}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+          className="rounded-md border border-gray-300 px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" required />
 
-        {/* Work Dates */}
-        <div className="grid grid-cols-2 gap-4">
-          <input type="date" name="start_date" value={formData.start_date} onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-          <input type="date" name="end_date" value={formData.end_date} onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-        </div>
+        {/* Dates */}
+        <input type="date" name="start_date" value={formData.start_date} onChange={handleChange}
+          className="rounded-md border border-gray-300 px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" required />
+        <input type="date" name="end_date" value={formData.end_date} onChange={handleChange}
+          className="rounded-md border border-gray-300 px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" required />
 
-        {/* Hours and Diesel */}
-        <div className="grid grid-cols-2 gap-4">
-          <input type="number" name="total_working_hours" placeholder="Total Working Hours" value={formData.total_working_hours} onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-          <input type="number" name="diesel_used" placeholder="Diesel Used (Litres)" value={formData.diesel_used} onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-        </div>
+        {/* Numbers */}
+        <input type="number" name="total_working_hours" placeholder="Total Working Hours" value={formData.total_working_hours} onChange={handleChange}
+          className="rounded-md border border-gray-300 px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" required />
+        <input type="number" name="diesel_used" placeholder="Diesel Used (L)" value={formData.diesel_used} onChange={handleChange}
+          className="rounded-md border border-gray-300 px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" required />
 
-        {/* Rate per Hour */}
         <input type="number" name="rate_per_hour" placeholder="Rate per Hour" value={formData.rate_per_hour} onChange={handleChange}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+          className="rounded-md border border-gray-300 px-3 py-2 bg-white dark:bg-gray-700 dark:text-white col-span-2" required />
 
-        {/* Total Amount (auto calculated) */}
-        <div>
-          <label className="block font-medium">Total Amount</label>
-          <p className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">{totalAmount()} ₹</p>
+        {/* Total Amount */}
+        <div className="col-span-2">
+          <label className="block mb-1 font-medium">Total Amount (₹)</label>
+          <div className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white px-4 py-2 rounded-md border">
+            {totalAmount()} ₹
+          </div>
         </div>
 
-        {/* Commission Section */}
-        <div className="flex items-start mb-6 space-x-2">
-          <input type="checkbox" name="commission_based" className='w-4 h-4 border border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800' checked={formData.commission_based} onChange={handleChange} />
-          <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Commission Based?</label>
+        {/* Commission */}
+        <div className="col-span-2 flex items-center space-x-3">
+          <input type="checkbox" name="commission_based" checked={formData.commission_based} onChange={handleChange} />
+          <label className="text-sm font-medium">Commission Based?</label>
         </div>
 
         {formData.commission_based && (
           <input type="number" name="commission_amount" placeholder="Commission Amount" value={formData.commission_amount} onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+            className="rounded-md border border-gray-300 px-3 py-2 bg-white dark:bg-gray-700 dark:text-white col-span-2" />
         )}
 
         {/* Payment Status */}
-        <div>
-          <label className="block font-medium">Payment Status</label>
+        <div className="col-span-2">
+          <label className="block mb-1 font-medium">Payment Status</label>
           <select name="payment_status" value={formData.payment_status} onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            className="w-full rounded-md border border-gray-300 px-3 py-2 bg-white dark:bg-gray-700 dark:text-white">
             <option value="Pending">Pending</option>
             <option value="Done">Done</option>
           </select>
         </div>
 
         {/* Submit Button */}
-        <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-          Submit Work Entry
-        </button>
+        <div className="col-span-2 text-center mt-4">
+          <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-md font-semibold">
+            Submit Work Entry
+          </button>
+        </div>
       </form>
     </div>
   );

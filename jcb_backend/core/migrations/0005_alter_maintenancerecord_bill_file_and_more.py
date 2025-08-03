@@ -13,7 +13,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='maintenancerecord',
             name='bill_file',
-            field=models.FileField(blank=True, null=True, upload_to='maintenance_bills/'),
+            field=models.FileField(blank=True, null=True,
+                                   upload_to='maintenance_bills/'),
         ),
         migrations.AlterField(
             model_name='maintenancerecord',

@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { createOperator } from "../services/api";
+import React, { useState } from 'react';
+import { createOperator } from '../services/api';
 
 export default function OperatorForm({ onSuccess }) {
   const [form, setForm] = useState({
-    name: "",
-    address: "",
-    age: "",
-    salary: "",
+    name: '',
+    address: '',
+    age: '',
+    salary: '',
     photo: null,
     id_proof: null,
     license: null,
@@ -26,78 +26,156 @@ export default function OperatorForm({ onSuccess }) {
 
     try {
       await createOperator(data);
-      alert("Operator registered!");
-      onSuccess();
+      alert('Operator registered!');
+      if (typeof onSuccess === 'function') {
+        onSuccess();
+      }
+
       setForm({
-        name: "",
-        address: "",
-        age: "",
-        salary: "",
+        name: '',
+        address: '',
+        age: '',
+        salary: '',
         photo: null,
         id_proof: null,
         license: null,
       });
     } catch (err) {
-      alert("Error: " + err.message);
+      alert('Error: ' + err.message);
     }
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-6 w-full md:w-1/2 mx-auto"
+      className="bg-white dark:bg-gray-900 p-6 md:p-8 rounded-xl shadow-lg max-w-2xl mx-auto mt-8 border border-gray-200 dark:border-gray-700 transition-colors"
       encType="multipart/form-data"
     >
-      <h2 className="text-lg font-semibold sm:col-span-2 dark:text-white mb-4">
-        Register Operator
+      <h2 className="text-2xl font-bold mb-6 text-center text-purple-700 dark:text-purple-400">
+        Operator Registration
       </h2>
 
-      {["name", "address", "age", "salary"].map((field) => (
-        <div key={field} className="mb-4">
-          <label
-            htmlFor={field}
-            className="ms-2 font-medium text-gray-700 dark:text-gray-300 capitalize"
-          >
-            {field}
+      {/* Text Fields */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="name" className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 text-left">
+            Full Name
           </label>
           <input
-            id={field}
-            name={field}
-            type={field === "age" || field === "salary" ? "number" : "text"}
-            value={form[field]}
+            id="name"
+            name="name"
+            type="text"
+            value={form.name}
             onChange={handleChange}
-            placeholder={`Enter ${field}`}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="e.g. John Doe"
+            className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
             required
           />
         </div>
-      ))}
 
-      {["photo", "id_proof", "license"].map((fileField) => (
-        <div key={fileField} className="mb-6">
-          <label
-            htmlFor={fileField}
-            className="ms-2 font-medium text-gray-700 dark:text-gray-300 capitalize"
-          >
-            {fileField.replace("_", " ")}
+        <div>
+          <label htmlFor="address" className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 text-left">
+            Address
+          </label>
+          <input
+            id="address"
+            name="address"
+            type="text"
+            value={form.address}
+            onChange={handleChange}
+            placeholder="Enter address"
+            className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="age" className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 text-left">
+            Age
+          </label>
+          <input
+            id="age"
+            name="age"
+            type="number"
+            value={form.age}
+            onChange={handleChange}
+            placeholder="e.g. 35"
+            className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="salary" className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 text-left">
+            Monthly Salary (₹)
+          </label>
+          <input
+            id="salary"
+            name="salary"
+            type="number"
+            value={form.salary}
+            onChange={handleChange}
+            placeholder="e.g. 25000"
+            className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            required
+          />
+        </div>
+      </div>
+
+      {/* File Inputs */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <div>
+          <label htmlFor="photo" className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 text-left">
+            Passport Photo
           </label>
           <input
             type="file"
-            id={fileField}
-            name={fileField}
+            id="photo"
+            name="photo"
             accept="image/*,.pdf"
             onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="block w-full text-sm text-gray-600 dark:text-gray-300 file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200"
           />
         </div>
-      ))}
 
-      <button
-        type="submit"
-        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-      >
-        Submit
-      </button>
+        <div>
+          <label htmlFor="id_proof" className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 text-left">
+            ID Proof
+          </label>
+          <input
+            type="file"
+            id="id_proof"
+            name="id_proof"
+            accept="image/*,.pdf"
+            onChange={handleChange}
+            className="block w-full text-sm text-gray-600 dark:text-gray-300 file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="license" className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 text-left">
+            License
+          </label>
+          <input
+            type="file"
+            id="license"
+            name="license"
+            accept="image/*,.pdf"
+            onChange={handleChange}
+            className="block w-full text-sm text-gray-600 dark:text-gray-300 file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200"
+          />
+        </div>
+      </div>
+
+      {/* Submit */}
+      <div className="mt-8">
+        <button
+          type="submit"
+          className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-md font-semibold transition-colors shadow-md"
+        >
+          Register Operator
+        </button>
+      </div>
     </form>
   );
 }
